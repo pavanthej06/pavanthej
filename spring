@@ -1,0 +1,45 @@
+package bl;
+
+import java.util.List;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
+
+public class Security {
+	JdbcTemplate temp;
+	public Security()
+	{
+		ApplicationContext context = new ClassPathXmlApplicationContext("spring-config.xml");
+		System.out.println("ok");
+		temp = (JdbcTemplate)context.getBean("jtemp");
+	}
+	
+	public List<TrainingRequest> getAllTrainingRequest()
+	{
+		List<TrainingRequest> tr=temp.query("select * from TrainingRequest",new TrainingRequestMapper());
+		return tr;
+	}
+public int saveNewTrainingRequest(String pm_name,String vertical,String tech,String date,int appar,String location,String type)
+{
+	int ret = temp.update("insert into TrainingRequest values(reqidgen.nextval,?,?,?,?,?,?,?);" 
+			new Object[] {pm_name,technology,tech,date,vertical,appar,location,type});
+	return ret;
+	
+}
+	public boolean isUserValid(String username, String userpassword)
+	{
+		
+		List list=temp.queryForList("select * from logintable where loginid= ? and loginpassword= ?",
+				new Object[] {username,userpassword});
+		System.out.println(list.size());
+		
+		if(list.size()==1)
+				return true;
+		else
+				return false;
+	}
+
+}
+
