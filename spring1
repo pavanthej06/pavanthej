@@ -1,0 +1,85 @@
+package controllers;
+
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.method.support.ModelAndViewContainer;
+
+import bl.Security;
+import bl.TrainingRequest;
+
+@Controller
+public class TRMController {
+
+	@RequestMapping(value="/")
+	public String welcomeService()
+	{
+		return "login";
+	}
+	@RequestMapping(value="db")
+	public String db()
+	{
+		return "login";
+	}
+	@RequestMapping(value="loginform")
+	public String loginService(HttpServletRequest request,Model model)
+	{
+		System.out.println("----------------------ok");
+		
+		String username=request.getParameter("username");
+		String userpassword=request.getParameter("userpassword");
+		
+		boolean result= new Security().isUserValid(username,userpassword);
+		if(result)
+		{
+			List<TrainingRequest> allrequest=new Security().getAllTrainingRequest();
+			model.addAttribute("all",allrequest);
+			return "dashboard";
+		}
+		else
+		{
+			model.addAttribute("errmsg","wrong user id or password");
+			return "login";
+		}	
+		
+	}
+	@RequestMapping(value="requestform")
+	public String requestFormService()
+	{
+		return "newrequestform";
+	}
+	@RequestMapping(value="savenewrequestform")
+	public String savenewrequestService(HttpServletRequest request,Model model, int ret)
+	{
+		String pm_name=request.getParameter("pm_name");
+		String vertical=request.getParameter("V_name");
+		String tech=request.getParameter("pm_name");
+		String date=request.getParameter("pm_name");
+		int appar=Integer.parseInt(request.getParameter("approx_participants"));
+		String location=request.getParameter("pm_name");
+		String type=request.getParameter("pm_name");
+		
+		new Security().saveNewTrainingRequest(pm_name, vertical, tech, date, appar, location, type);
+		if(ret>0)
+		{
+			return new ModelAndView("redirect:/myURL");
+		}
+		
+		return "login";
+	}
+	@RequestMapping(value="return_dashboard")
+	public String loginService()
+	{
+		return "return_dashboard";
+	}
+	@RequestMapping(value="loginform")
+	public String welcomeService(HttpServletRequest request,Model model)
+	{
+		return "login";
+	}
+	
+}
